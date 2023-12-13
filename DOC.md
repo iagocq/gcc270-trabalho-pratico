@@ -1,3 +1,13 @@
+Conteúdos
+- [Criação da aplicação](#criação-da-aplicação)
+- [Criação da imagem Docker](#criação-da-imagem-docker)
+- [Publicação da imagem](#publicação-da-imagem)
+- [Criação dos artefatos no Kubernetes](#criação-dos-artefatos-no-kubernetes)
+  - [Dificuldades encontradas](#dificuldades-encontradas)
+    - [Como configurar o Chart de dependência](#como-configurar-o-chart-de-dependência)
+    - [Credenciais não funcionavam](#credenciais-não-funcionavam)
+- [Utilizando a aplicação](#utilizando-a-aplicação)
+
 ## Criação da aplicação
 
 Criamos uma aplicação To-Do simples utilizando a linguagem Python e as bibliotecas FastAPI e SQLModel.
@@ -113,3 +123,82 @@ kubectl delete pvc data-my-todo-postgresql-0
 ```
 
 E, com sorte, depois de instalar o Chart, as novas credenciais foram aplicadas.
+
+## Utilizando a aplicação
+
+Em seguida, estão alguns comandos para testá-la e demonstrar suas funcionalidades.
+Assumimos que `curl` e `jq` estão instalados.
+
+```sh
+APP_URL="http://localhost:8000"
+
+#### Criando itens na lista de To-Do ####
+
+curl -s -H 'Content-Type: application/json' -X POST -d '{"content": "item um da lista"}' $APP_URL/todo | jq .
+# {
+#  "content": "item um da lista",
+#  "done": false,
+#  "id": 1,
+#  "date": "2023-12-13"
+# }
+
+curl -s -H 'Content-Type: application/json' -X POST -d '{"content": "item dois da lista"}' $APP_URL/todo | jq .
+# {
+#   "content": "item dois da lista",
+#   "done": false,
+#   "id": 2,
+#   "date": "2023-12-13"
+# }
+
+#### Listando todos os itens ####
+
+curl -s $APP_URL/todo | jq .
+# [
+#   {
+#     "content": "item um da lista",
+#     "done": false,
+#     "id": 1,
+#     "date": "2023-12-13"
+#   },
+#   {
+#     "content": "item dois da lista",
+#     "done": false,
+#     "id": 2,
+#     "date": "2023-12-13"
+#   }
+# ]
+
+#### Editando os itens ####
+
+curl -s -H 'Content-Type: application/json' -X PUT -d '{"done": true}' $APP_URL/todo/1 | jq .
+# {
+#   "content": "item um da lista",
+#   "done": true,
+#   "id": 1,
+#   "date": "2023-12-13"
+# }
+
+curl -s -H 'Content-Type: application/json' -X PUT -d '{"content": "segundo item da lista"}' $APP_URL/todo/2 | jq .
+# {
+#   "content": "segundo item da lista",
+#   "done": false,
+#   "id": 2,
+#   "date": "2023-12-13"
+# }
+
+#### Apagando um item ####
+
+curl -s -X DELETE $APP_URL/todo/1 | jq .
+# null
+
+curl -s $APP_URL/todo | jq .
+# [
+#   {
+#     "content": "segundo item da lista",
+#     "done": false,
+#     "id": 2,
+#     "date": "2023-12-13"
+#   }
+# ]
+
+```
