@@ -132,9 +132,14 @@ Assumimos que `curl` e `jq` estão instalados.
 ```sh
 APP_URL="http://localhost:8000"
 
+# Função auxiliar para colocar cabeçalho comum em chamadas do curl e formatar sua saída
+function curl_json() {
+  curl -s -H 'Content-Type: application/json' "$@" | jq .
+}
+
 #### Criando itens na lista de To-Do ####
 
-curl -s -H 'Content-Type: application/json' -X POST -d '{"content": "item um da lista"}' $APP_URL/todo | jq .
+curl_json -X POST -d '{"content": "item um da lista"}' $APP_URL/todo
 # {
 #  "content": "item um da lista",
 #  "done": false,
@@ -142,7 +147,7 @@ curl -s -H 'Content-Type: application/json' -X POST -d '{"content": "item um da 
 #  "date": "2023-12-13"
 # }
 
-curl -s -H 'Content-Type: application/json' -X POST -d '{"content": "item dois da lista"}' $APP_URL/todo | jq .
+curl_json -X POST -d '{"content": "item dois da lista"}' $APP_URL/todo
 # {
 #   "content": "item dois da lista",
 #   "done": false,
@@ -152,7 +157,7 @@ curl -s -H 'Content-Type: application/json' -X POST -d '{"content": "item dois d
 
 #### Listando todos os itens ####
 
-curl -s $APP_URL/todo | jq .
+curl_json $APP_URL/todo
 # [
 #   {
 #     "content": "item um da lista",
@@ -170,7 +175,7 @@ curl -s $APP_URL/todo | jq .
 
 #### Editando os itens ####
 
-curl -s -H 'Content-Type: application/json' -X PUT -d '{"done": true}' $APP_URL/todo/1 | jq .
+curl_json -X PUT -d '{"done": true}' $APP_URL/todo/1
 # {
 #   "content": "item um da lista",
 #   "done": true,
@@ -178,7 +183,7 @@ curl -s -H 'Content-Type: application/json' -X PUT -d '{"done": true}' $APP_URL/
 #   "date": "2023-12-13"
 # }
 
-curl -s -H 'Content-Type: application/json' -X PUT -d '{"content": "segundo item da lista"}' $APP_URL/todo/2 | jq .
+curl_json -X PUT -d '{"content": "segundo item da lista"}' $APP_URL/todo/2
 # {
 #   "content": "segundo item da lista",
 #   "done": false,
@@ -188,10 +193,10 @@ curl -s -H 'Content-Type: application/json' -X PUT -d '{"content": "segundo item
 
 #### Apagando um item ####
 
-curl -s -X DELETE $APP_URL/todo/1 | jq .
+curl_json DELETE $APP_URL/todo/1
 # null
 
-curl -s $APP_URL/todo | jq .
+curl_json $APP_URL/todo
 # [
 #   {
 #     "content": "segundo item da lista",
@@ -200,5 +205,4 @@ curl -s $APP_URL/todo | jq .
 #     "date": "2023-12-13"
 #   }
 # ]
-
 ```
