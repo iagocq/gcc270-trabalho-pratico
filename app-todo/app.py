@@ -4,6 +4,8 @@ from contextlib import asynccontextmanager
 from typing import Optional
 import json
 
+from urllib.parse import quote
+
 from fastapi import FastAPI, HTTPException
 from sqlmodel import Field, Session, SQLModel, create_engine, select, delete
 
@@ -20,8 +22,14 @@ def getenv(e: str) -> str:
 
     return env
 
-DB_URL = getenv('DB_URL')
+DB_DIALECT = getenv('DB_DIALECT')
+DB_USER = getenv('DB_USER')
+DB_PASSWORD = getenv('DB_PASSWORD')
+DB_HOST = getenv('DB_HOST')
+DB_NAME = getenv('DB_NAME')
 DB_CONNECT_ARGS = json.loads(os.getenv('DB_CONNECT_ARGS', '{}'))
+
+DB_URL = f'{DB_DIALECT}://{DB_USER}:{quote(DB_PASSWORD)}@{DB_HOST}/{DB_NAME}'
 
 engine = create_engine(DB_URL, echo=True, connect_args=DB_CONNECT_ARGS)
 
