@@ -4,7 +4,7 @@ Criamos uma aplicação To-Do simples utilizando a linguagem Python e as bibliot
 O processo foi simples, mesmo que nunca tenhamos utilizado essas bibliotecas,
 sendo necessário apenas seguir [o tutorial disponível no site do SQLModel](https://sqlmodel.tiangolo.com/tutorial/fastapi/simple-hero-api/).
 
-A aplicação conta com simples operações CRUD para adicionar, remover, atualizar e listar ítens em uma lista de afazeres.
+A aplicação conta com simples operações CRUD para adicionar, remover, atualizar e listar itens em uma lista de afazeres.
 
 ## Criação da imagem Docker
 
@@ -64,7 +64,7 @@ data:
   DB_NAME: {{ .Values.postgresql.auth.database }}
 ```
 
-O arquivo `templates/secrets.yaml` foi criado para guardar configurações "secretas" para a aplicação. Aqui, eles são facilmente acessíveis e podem ser trivialmente recuperados observando de onde os valores foram obtidos (`Values.yaml`).
+O arquivo `templates/secrets.yaml` foi criado para guardar configurações "secretas" para a aplicação. Aqui, eles são facilmente acessíveis e podem ser trivialmente recuperados ao observar a origem dos valores (`Values.yaml`).
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -81,8 +81,8 @@ data:
 Para executar a aplicação, executamos:
 ```sh
 kubectl install my-todo ./todo
-kubectl get pods --namespace default -l "app.kubernetes.io/name=todo,app.kubernetes.io/instance=my-todo" -o jsonpath="{.items[0].metadata.name}"
-kubectl --namespace default port-forward <nome do pod> 8000:8000 --address 0.0.0.0
+KUBE_POD=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=todo,app.kubernetes.io/instance=my-todo" -o jsonpath="{.items[0].metadata.name}")
+kubectl --namespace default port-forward "$KUBE_POD" 8000:8000 --address 0.0.0.0
 ```
 
 ### Dificuldades encontradas
