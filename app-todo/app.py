@@ -30,7 +30,6 @@ DB_NAME = getenv('DB_NAME')
 DB_CONNECT_ARGS = json.loads(os.getenv('DB_CONNECT_ARGS', '{}'))
 
 DB_URL = f'{DB_DIALECT}://{DB_USER}:{quote(DB_PASSWORD)}@{DB_HOST}/{DB_NAME}'
-print(DB_URL)
 engine = create_engine(DB_URL, echo=True, connect_args=DB_CONNECT_ARGS)
 
 def create_db_and_tables():
