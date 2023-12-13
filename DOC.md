@@ -1,4 +1,8 @@
-Conteúdos
+Autores:
+- Iago Manoel Brito de Sá Vaz da Silva - 202010135
+- Vinicius Caputo de Castro - 202011042
+
+Conteúdos:
 - [Criação da aplicação](#criação-da-aplicação)
 - [Criação da imagem Docker](#criação-da-imagem-docker)
 - [Publicação da imagem](#publicação-da-imagem)
@@ -90,7 +94,7 @@ data:
 
 Para executar a aplicação, executamos:
 ```sh
-kubectl install my-todo ./todo
+helm install my-todo ./todo
 KUBE_POD=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=todo,app.kubernetes.io/instance=my-todo" -o jsonpath="{.items[0].metadata.name}")
 kubectl --namespace default port-forward "$KUBE_POD" 8000:8000 --address 0.0.0.0
 ```
@@ -193,7 +197,7 @@ curl_json -X PUT -d '{"content": "segundo item da lista"}' $APP_URL/todo/2
 
 #### Apagando um item ####
 
-curl_json DELETE $APP_URL/todo/1
+curl_json -X DELETE $APP_URL/todo/1
 # null
 
 curl_json $APP_URL/todo
